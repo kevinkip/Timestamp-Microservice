@@ -24,43 +24,33 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get('/api/', (req,res) => {
-  const projDate = new Date();
+app.get("/api/", (req,res) => {
   res.json({
-    unix: projDate.valueOf(),
-    utc: projDate.toUTCString()
+    unix: new Date().getTime(),
+    utc: new Date().toUTCString()
   });
 });
 
 app.get('/api/:timestamp', (req,res) => {
-  const timeStamp = req.params.timestamp;
+  const timestamp = req.params.timestamp;
+  // res.send(timestamp);
 
-  
-  if(/\d{5,}/.test(timeStamp)) {
-     
-    const dateInt = parseInt(timeStamp);
-
-    res.json({
-      unix: Number(timeStamp),
-      utc: new Date(dateInt).toUTCString()
-    }); 
-  } else {
-      
-    const goodInt = new Date(timeStamp);
-
-    if (goodInt.toString() === "Invalid Date"){
-      res.json({
-        error: "Invalid Date"
-      });
-    } else {
-      res.json({
-        unix: goodInt.valueOf(),
-        utc: goodInt.toUTCString()
-      });
-    }
+  if (isNaN(Number(timestamp)) && timestamp.length == 13) {
+    return res.json({
+      unix: timestamp,
+      utc: new Date(Number(timestamp)).toUTCString()
+    })
   }
-});
 
+  if (new Date(timestamp).toUTCString() != "Invalid Date") {
+    return res.json({
+      unix: new Date(timestamp).getTime(),
+      utc: timestamp
+    });
+  };
+  res.json("Invalid Date");
+
+});
 
 // listen for requests :)
 var listener = app.listen(3000, function () {
